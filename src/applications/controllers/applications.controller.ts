@@ -7,6 +7,7 @@ import {
   UseGuards,
   Req,
   Post,
+  Request,
 } from '@nestjs/common';
 import { ApplicationsService } from '../services/applications.service';
 import { UpdateStatusDto } from '../dto/update-status.dto';
@@ -23,6 +24,14 @@ import {
 } from '@nestjs/swagger';
 import { UserRole } from '@prisma/client';
 
+interface RequestWithUser extends Request {
+  user: {
+    userId: string;
+    email: string;
+    role: UserRole;
+  };
+}
+
 @ApiTags('applications')
 @ApiBearerAuth()
 @Controller('api/applications')
@@ -37,7 +46,10 @@ export class ApplicationsController {
     status: 201,
     description: 'The application has been successfully created.',
   })
-  create(@Body() createApplicationDto: CreateApplicationDto, @Req() req: any) {
+  create(
+    @Body() createApplicationDto: CreateApplicationDto,
+    @Req() req: RequestWithUser,
+  ) {
     const userId = req.user.userId;
     return this.applicationsService.create(createApplicationDto, userId);
   }
@@ -60,7 +72,7 @@ export class ApplicationsController {
   updateStatus(
     @Param('id') id: string,
     @Body() updateStatusDto: UpdateStatusDto,
-    @Req() req: any,
+    @Req() req: RequestWithUser,
   ) {
     const userId = req.user.userId;
     return this.applicationsService.updateStatus(id, updateStatusDto, userId);

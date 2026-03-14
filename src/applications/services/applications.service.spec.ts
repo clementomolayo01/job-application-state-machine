@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/unbound-method */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApplicationsService } from './applications.service';
 import { PrismaService } from '../../prisma/prisma.service';
 import { EmailService } from '../../email/email.service';
-import { ApplicationStatus, UserRole } from '@prisma/client';
+import { ApplicationStatus } from '@prisma/client';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 
 describe('ApplicationsService', () => {
@@ -24,7 +26,7 @@ describe('ApplicationsService', () => {
         },
         {
           provide: EmailService,
-          useValue: { sendContractConfirmation: jest.fn() },
+          useValue: { sendStatusChangeNotification: jest.fn() },
         },
       ],
     }).compile();
@@ -109,17 +111,21 @@ describe('ApplicationsService', () => {
       const mockApp = {
         id: 'uuid',
         status: ApplicationStatus.INTERVIEWING,
-        email: 'test@test.com',
-      } as any;
-      jest.spyOn(prisma.application, 'findUnique').mockResolvedValue(mockApp);
+        user: { email: 'test@test.com' },
+      };
+      jest
+        .spyOn(prisma.application, 'findUnique')
+        .mockResolvedValue(mockApp as any);
 
-      const transactionMock = jest.fn().mockImplementation(async (cb) => {
-        return cb(prisma);
-      });
+      const transactionMock = jest
+        .fn()
+        .mockImplementation((cb: (tx: PrismaService) => Promise<any>) => {
+          return cb(prisma);
+        });
       jest.spyOn(prisma, '$transaction').mockImplementation(transactionMock);
 
       const emailSpy = jest
-        .spyOn(emailService, 'sendContractConfirmation')
+        .spyOn(emailService, 'sendStatusChangeNotification')
         .mockResolvedValue(undefined);
 
       await service.updateStatus(
@@ -144,19 +150,24 @@ describe('ApplicationsService', () => {
           changedBy: 'user1',
         },
       });
-      expect(emailSpy).toHaveBeenCalledWith('test@test.com', 'url');
+      expect(emailSpy).toHaveBeenCalledWith(
+        'test@test.com',
+        ApplicationStatus.CONTRACTED,
+      );
     });
   });
 
   describe('getHistory', () => {
     it('should return history', async () => {
-      const mockApp = { id: 'uuid' } as any;
-      jest.spyOn(prisma.application, 'findUnique').mockResolvedValue(mockApp);
+      const mockApp = { id: 'uuid' };
+      jest
+        .spyOn(prisma.application, 'findUnique')
+        .mockResolvedValue(mockApp as any);
 
-      const historyResult = [{ id: 'hist1' }] as any;
+      const historyResult = [{ id: 'hist1' }];
       jest
         .spyOn(prisma.statusHistory, 'findMany')
-        .mockResolvedValue(historyResult);
+        .mockResolvedValue(historyResult as any);
 
       const res = await service.getHistory('uuid');
       expect(res).toEqual(historyResult);

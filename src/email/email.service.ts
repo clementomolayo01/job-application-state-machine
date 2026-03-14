@@ -54,10 +54,12 @@ export class EmailService {
 
         this.logger.log(`Email sent successfully to ${to}`);
         return;
-      } catch (error: any) {
+      } catch (error: unknown) {
         retries++;
+        const errorMessage =
+          error instanceof Error ? error.message : String(error);
         this.logger.warn(
-          `Failed to send email to ${to} (Attempt ${retries}/${maxRetries}): ${error.message}`,
+          `Failed to send email to ${to} (Attempt ${retries}/${maxRetries}): ${errorMessage}`,
         );
 
         if (retries >= maxRetries) {

@@ -105,10 +105,10 @@ export class ApplicationsService {
     // Send email notifications asynchronously
     this.emailService
       .sendStatusChangeNotification(application.user.email, newStatus)
-      .catch((err) => {
+      .catch((err: unknown) => {
         this.logger.error(
           `Failed to send status update email for app ${id}`,
-          err,
+          err instanceof Error ? err.stack : String(err),
         );
       });
 

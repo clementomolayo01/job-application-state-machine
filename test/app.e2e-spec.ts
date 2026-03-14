@@ -26,7 +26,7 @@ describe('Job Applications (e2e)', () => {
   });
 
   it('/api/applications/:id/history (GET) - unauthorized missing headers', () => {
-    return request(app.getHttpServer())
+    return request(app.getHttpServer() as string)
       .get('/api/applications/123/history')
       .expect(403);
   });
