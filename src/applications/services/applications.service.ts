@@ -87,7 +87,6 @@ export class ApplicationsService {
         where: { id },
         data: {
           status: newStatus,
-          contractUrl: dto.contractUrl,
         },
       });
 

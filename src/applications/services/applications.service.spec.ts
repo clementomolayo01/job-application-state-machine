@@ -128,7 +128,6 @@ describe('ApplicationsService', () => {
         'uuid',
         {
           status: ApplicationStatus.CONTRACTED,
-          contractUrl: 'url',
         },
         'user1',
       );
@@ -136,7 +135,7 @@ describe('ApplicationsService', () => {
       expect(transactionMock).toHaveBeenCalled();
       expect(prisma.application.update).toHaveBeenCalledWith({
         where: { id: 'uuid' },
-        data: { status: ApplicationStatus.CONTRACTED, contractUrl: 'url' },
+        data: { status: ApplicationStatus.CONTRACTED },
       });
       expect(prisma.statusHistory.create).toHaveBeenCalledWith({
         data: {

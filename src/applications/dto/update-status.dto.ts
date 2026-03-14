@@ -1,4 +1,4 @@
-import { IsEnum, IsOptional, IsString, IsUrl } from 'class-validator';
+import { IsEnum } from 'class-validator';
 import { ApplicationStatus } from '@prisma/client';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -9,13 +9,4 @@ export class UpdateStatusDto {
   })
   @IsEnum(ApplicationStatus)
   status: ApplicationStatus;
-
-  @ApiProperty({
-    description: 'The URL of the contract, required when status is CONTRACTED',
-    required: false,
-  })
-  @IsOptional()
-  @IsString()
-  @IsUrl()
-  contractUrl?: string;
 }
