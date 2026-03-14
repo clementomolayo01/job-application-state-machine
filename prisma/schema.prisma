@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ApplicationStatus {
+  APPLIED
+  INTERVIEWING
+  CONTRACTED
+  COMPLETED
+  CLOSED
+}
+
+enum UserRole {
+  ADMIN
+  COMPANY
+  CANDIDATE
+}
+
+enum TechRole {
+  BACKEND_ENGINEER
+  FRONTEND_ENGINEER
+  FULLSTACK_ENGINEER
+  DEVOPS_ENGINEER
+  DATA_SCIENTIST
+}
+
+model User {
+  id           String        @id @default(uuid()) @db.Uuid
+  email        String        @unique
+  password     String
+  role         UserRole      @default(CANDIDATE)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  applications Application[]
+}
+
+model Application {
+  id          String            @id @default(uuid()) @db.Uuid
+  userId      String            @db.Uuid
+  user        User              @relation(fields: [userId], references: [id])
+  roleApplied TechRole
+  coverLetter String
+  status      ApplicationStatus @default(APPLIED)
+  contractUrl String?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  
+  history     StatusHistory[]
+
+  @@unique([userId, roleApplied])
+}
+
+model StatusHistory {
+  id             String          @id @default(uuid()) @db.Uuid
+  applicationId  String          @db.Uuid
+  application    Application     @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  previousStatus ApplicationStatus?
+  newStatus      ApplicationStatus
+  changedBy      String
+  timestamp      DateTime        @default(now())
+  metadata       Json?           @db.JsonB
+}

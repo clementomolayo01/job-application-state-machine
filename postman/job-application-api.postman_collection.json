@@ -1,0 +1,121 @@
+{
+  "info": {
+    "name": "Job Application API v2",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Register",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/auth/register",
+          "protocol": "http",
+          "host": [ "localhost" ],
+          "port": "3000",
+          "path": [ "api", "auth", "register" ]
+        }
+      }
+    },
+    {
+      "name": "Login Admin",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"admin123\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/auth/login",
+          "protocol": "http",
+          "host": [ "localhost" ],
+          "port": "3000",
+          "path": [ "api", "auth", "login" ]
+        }
+      }
+    },
+    {
+      "name": "Get All Applications",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            { "key": "token", "value": "{{jwt_token}}", "type": "string" }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/applications",
+          "protocol": "http",
+          "host": [ "localhost" ],
+          "port": "3000",
+          "path": [ "api", "applications" ]
+        }
+      }
+    },
+    {
+      "name": "Create Application (CANDIDATE)",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            { "key": "token", "value": "{{jwt_token}}", "type": "string" }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"roleApplied\": \"BACKEND_ENGINEER\",\n  \"coverLetter\": \"I am very interested in this role and have extensive experience with NestJS and Prisma.\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/applications",
+          "protocol": "http",
+          "host": [ "localhost" ],
+          "port": "3000",
+          "path": [ "api", "applications" ]
+        }
+      }
+    },
+    {
+      "name": "Update Status",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            { "key": "token", "value": "{{jwt_token}}", "type": "string" }
+          ]
+        },
+        "method": "PATCH",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"INTERVIEWING\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/applications/APP_ID/status",
+          "protocol": "http",
+          "host": [ "localhost" ],
+          "port": "3000",
+          "path": [ "api", "applications", "APP_ID", "status" ]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "jwt_token",
+      "value": "PASTE_TOKEN_HERE"
+    }
+  ]
+}
