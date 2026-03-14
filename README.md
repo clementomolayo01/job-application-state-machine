@@ -65,7 +65,8 @@ npm run test
 
 ## API Access
 
-- **Swagger UI**: `http://localhost:3000/api/docs`
+- **Live API Documentation**: [Swagger UI](https://job-application-state-machine-production.up.railway.app/api/docs)
+- **Local Swagger**: `http://localhost:3000/api/docs`
 - **Postman**: Import `postman/job-application-api.postman_collection.json`
 
 ### Seed Users (Development)
