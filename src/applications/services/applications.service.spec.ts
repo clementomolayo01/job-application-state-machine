@@ -50,7 +50,6 @@ describe('ApplicationsService', () => {
         service.validateTransition(
           ApplicationStatus.APPLIED,
           ApplicationStatus.CONTRACTED,
-          { status: ApplicationStatus.CONTRACTED },
         );
       }).toThrow(BadRequestException);
     });
@@ -60,19 +59,17 @@ describe('ApplicationsService', () => {
         service.validateTransition(
           ApplicationStatus.APPLIED,
           ApplicationStatus.INTERVIEWING,
-          { status: ApplicationStatus.INTERVIEWING },
         );
       }).not.toThrow();
     });
 
-    it('should throw error if INTERVIEWING -> CONTRACTED without contractUrl', () => {
+    it('should allow INTERVIEWING -> CONTRACTED without contractUrl', () => {
       expect(() => {
         service.validateTransition(
           ApplicationStatus.INTERVIEWING,
           ApplicationStatus.CONTRACTED,
-          { status: ApplicationStatus.CONTRACTED },
         );
-      }).toThrow(BadRequestException);
+      }).not.toThrow();
     });
 
     it('should allow INTERVIEWING -> CONTRACTED with contractUrl', () => {
@@ -80,10 +77,6 @@ describe('ApplicationsService', () => {
         service.validateTransition(
           ApplicationStatus.INTERVIEWING,
           ApplicationStatus.CONTRACTED,
-          {
-            status: ApplicationStatus.CONTRACTED,
-            contractUrl: 'http://example.com',
-          },
         );
       }).not.toThrow();
     });
@@ -93,7 +86,6 @@ describe('ApplicationsService', () => {
         service.validateTransition(
           ApplicationStatus.APPLIED,
           ApplicationStatus.CLOSED,
-          { status: ApplicationStatus.CLOSED },
         );
       }).not.toThrow();
     });

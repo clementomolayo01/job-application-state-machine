@@ -80,7 +80,7 @@ export class ApplicationsService {
 
     const previousStatus = application.status;
 
-    this.validateTransition(previousStatus, newStatus, dto);
+    this.validateTransition(previousStatus, newStatus);
 
     const updatedApplication = await this.prisma.$transaction(async (tx) => {
       const updatedApp = await tx.application.update({
@@ -138,7 +138,6 @@ export class ApplicationsService {
   validateTransition(
     currentStatus: ApplicationStatus,
     nextStatus: ApplicationStatus,
-    dto: UpdateStatusDto,
   ) {
     if (nextStatus === ApplicationStatus.CLOSED) {
       return;
@@ -153,11 +152,6 @@ export class ApplicationsService {
       currentStatus === ApplicationStatus.INTERVIEWING &&
       nextStatus === ApplicationStatus.CONTRACTED
     ) {
-      if (!dto.contractUrl) {
-        throw new BadRequestException(
-          'Contract URL is required for CONTRACTED status',
-        );
-      }
       return;
     }
     if (
