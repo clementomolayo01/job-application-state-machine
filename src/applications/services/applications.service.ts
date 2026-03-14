@@ -59,7 +59,7 @@ export class ApplicationsService {
       return app;
     });
 
-    // Send email notifications asynchronously
+
     this.emailService
       .sendStatusChangeNotification(
         application.user.email,
@@ -118,7 +118,7 @@ export class ApplicationsService {
       return updatedApp;
     });
 
-    // Send email notifications asynchronously
+
     this.emailService
       .sendStatusChangeNotification(application.user.email, newStatus)
       .catch((err: unknown) => {

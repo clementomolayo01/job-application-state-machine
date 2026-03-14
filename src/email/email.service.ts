@@ -70,7 +70,6 @@ export class EmailService {
           return;
         }
 
-        // Exponential backoff: 2^retries * 1000 ms (2s, 4s...)
         const backoffTime = Math.pow(2, retries) * 1000;
         await new Promise((resolve) => setTimeout(resolve, backoffTime));
       }
