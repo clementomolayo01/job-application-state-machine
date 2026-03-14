@@ -2,13 +2,14 @@ import {
   Injectable,
   BadRequestException,
   NotFoundException,
+  ForbiddenException,
   Logger,
 } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { EmailService } from '../../email/email.service';
 import { UpdateStatusDto } from '../dto/update-status.dto';
 import { CreateApplicationDto } from '../dto/create-application.dto';
-import { ApplicationStatus } from '@prisma/client';
+import { ApplicationStatus, UserRole } from '@prisma/client';
 
 @Injectable()
 export class ApplicationsService {
@@ -115,10 +116,17 @@ export class ApplicationsService {
     return updatedApplication;
   }
 
-  async getHistory(id: string) {
+  async getHistory(id: string, user: { userId: string; role: string }) {
     const app = await this.prisma.application.findUnique({ where: { id } });
     if (!app) {
       throw new NotFoundException(`Application with ID ${id} not found`);
+    }
+
+    // Permission check
+    if (user.role === UserRole.CANDIDATE && app.userId !== user.userId) {
+      throw new ForbiddenException(
+        'You are not authorized to view this application history',
+      );
     }
 
     return this.prisma.statusHistory.findMany({

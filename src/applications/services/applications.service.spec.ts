@@ -5,7 +5,11 @@ import { ApplicationsService } from './applications.service';
 import { PrismaService } from '../../prisma/prisma.service';
 import { EmailService } from '../../email/email.service';
 import { ApplicationStatus } from '@prisma/client';
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 
 describe('ApplicationsService', () => {
   let service: ApplicationsService;
@@ -159,7 +163,7 @@ describe('ApplicationsService', () => {
 
   describe('getHistory', () => {
     it('should return history', async () => {
-      const mockApp = { id: 'uuid' };
+      const mockApp = { id: 'uuid', userId: 'user1' };
       jest
         .spyOn(prisma.application, 'findUnique')
         .mockResolvedValue(mockApp as any);
@@ -169,12 +173,26 @@ describe('ApplicationsService', () => {
         .spyOn(prisma.statusHistory, 'findMany')
         .mockResolvedValue(historyResult as any);
 
-      const res = await service.getHistory('uuid');
+      const res = await service.getHistory('uuid', {
+        userId: 'user1',
+        role: 'ADMIN',
+      });
       expect(res).toEqual(historyResult);
       expect(prisma.statusHistory.findMany).toHaveBeenCalledWith({
         where: { applicationId: 'uuid' },
         orderBy: { timestamp: 'asc' },
       });
+    });
+
+    it('should throw ForbiddenException if candidate tries to access another user app history', async () => {
+      const mockApp = { id: 'uuid', userId: 'other-user' };
+      jest
+        .spyOn(prisma.application, 'findUnique')
+        .mockResolvedValue(mockApp as any);
+
+      await expect(
+        service.getHistory('uuid', { userId: 'user1', role: 'CANDIDATE' }),
+      ).rejects.toThrow(ForbiddenException);
     });
   });
 });

@@ -19,7 +19,6 @@ import {
   ApiTags,
   ApiOperation,
   ApiResponse,
-  ApiHeader,
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import { UserRole } from '@prisma/client';
@@ -80,18 +79,8 @@ export class ApplicationsController {
 
   @Get(':id/history')
   @ApiOperation({ summary: 'Get application status history' })
-  @ApiHeader({
-    name: 'x-user-role',
-    required: true,
-    description: 'Role of the user (ADMIN, COMPANY, CANDIDATE)',
-  })
-  @ApiHeader({
-    name: 'x-user-id',
-    required: true,
-    description: 'ID of the user',
-  })
   @ApiResponse({ status: 200, description: 'Returns the status history.' })
-  getHistory(@Param('id') id: string) {
-    return this.applicationsService.getHistory(id);
+  getHistory(@Param('id') id: string, @Req() req: RequestWithUser) {
+    return this.applicationsService.getHistory(id, req.user);
   }
 }
