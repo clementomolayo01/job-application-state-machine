@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ApplicationsService } from './applications.service';
 import { PrismaService } from '../../prisma/prisma.service';
 import { EmailService } from '../../email/email.service';
-import { ApplicationStatus } from '@prisma/client';
+import { ApplicationStatus, TechRole } from '@prisma/client';
 import {
   BadRequestException,
   NotFoundException,
@@ -58,7 +58,9 @@ describe('ApplicationsService', () => {
       };
 
       jest.spyOn(prisma.application, 'findUnique').mockResolvedValue(null);
-      jest.spyOn(prisma.application, 'create').mockResolvedValue(mockApp as any);
+      jest
+        .spyOn(prisma.application, 'create')
+        .mockResolvedValue(mockApp as any);
 
       const transactionMock = jest
         .fn()
@@ -72,7 +74,7 @@ describe('ApplicationsService', () => {
         .mockResolvedValue(undefined);
 
       const dto = {
-        roleApplied: 'BACKEND_ENGINEER' as any,
+        roleApplied: TechRole.BACKEND_ENGINEER,
         coverLetter: 'Hello',
       };
 

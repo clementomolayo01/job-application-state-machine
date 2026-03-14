@@ -61,7 +61,10 @@ export class ApplicationsService {
 
     // Send email notifications asynchronously
     this.emailService
-      .sendStatusChangeNotification(application.user.email, ApplicationStatus.APPLIED)
+      .sendStatusChangeNotification(
+        application.user.email,
+        ApplicationStatus.APPLIED,
+      )
       .catch((err: unknown) => {
         this.logger.error(
           `Failed to send application creation email for app ${application.id}`,
