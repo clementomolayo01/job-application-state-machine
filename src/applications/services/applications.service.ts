@@ -59,7 +59,6 @@ export class ApplicationsService {
       return app;
     });
 
-
     this.emailService
       .sendStatusChangeNotification(
         application.user.email,
@@ -117,7 +116,6 @@ export class ApplicationsService {
 
       return updatedApp;
     });
-
 
     this.emailService
       .sendStatusChangeNotification(application.user.email, newStatus)
