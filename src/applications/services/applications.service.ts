@@ -86,6 +86,7 @@ export class ApplicationsService {
         where: { id },
         data: {
           status: newStatus,
+          contractUrl: dto.contractUrl,
         },
       });
 
@@ -143,8 +144,14 @@ export class ApplicationsService {
     if (
       currentStatus === ApplicationStatus.INTERVIEWING &&
       nextStatus === ApplicationStatus.CONTRACTED
-    )
+    ) {
+      if (!dto.contractUrl) {
+        throw new BadRequestException(
+          'Contract URL is required for CONTRACTED status',
+        );
+      }
       return;
+    }
     if (
       currentStatus === ApplicationStatus.CONTRACTED &&
       nextStatus === ApplicationStatus.COMPLETED
