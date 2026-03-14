@@ -11,7 +11,8 @@ export class EmailService {
   constructor(private readonly configService: ConfigService) {
     const apiKey = this.configService.get<string>('RESEND_API_KEY') || 'dumb';
     this.resend = new Resend(apiKey);
-    this.defaultFrom = this.configService.get<string>('EMAIL_FROM') || 'no-reply@example.com';
+    this.defaultFrom =
+      this.configService.get<string>('EMAIL_FROM') || 'no-reply@example.com';
   }
 
   async sendWelcomeEmail(email: string, name: string): Promise<void> {
@@ -21,14 +22,22 @@ export class EmailService {
     return this.sendWithRetry(email, subject, body);
   }
 
-  async sendStatusChangeNotification(email: string, newStatus: string): Promise<void> {
+  async sendStatusChangeNotification(
+    email: string,
+    newStatus: string,
+  ): Promise<void> {
     const subject = 'Application Status Updated';
     const body = `Your job application status has been updated to: <strong>${newStatus}</strong>.`;
 
     return this.sendWithRetry(email, subject, body);
   }
 
-  private async sendWithRetry(to: string, subject: string, text: string, maxRetries = 3): Promise<void> {
+  private async sendWithRetry(
+    to: string,
+    subject: string,
+    text: string,
+    maxRetries = 3,
+  ): Promise<void> {
     let retries = 0;
     while (retries < maxRetries) {
       try {
@@ -47,10 +56,14 @@ export class EmailService {
         return;
       } catch (error: any) {
         retries++;
-        this.logger.warn(`Failed to send email to ${to} (Attempt ${retries}/${maxRetries}): ${error.message}`);
-        
+        this.logger.warn(
+          `Failed to send email to ${to} (Attempt ${retries}/${maxRetries}): ${error.message}`,
+        );
+
         if (retries >= maxRetries) {
-          this.logger.error(`Exhausted all retries. Could not send email to ${to}.`);
+          this.logger.error(
+            `Exhausted all retries. Could not send email to ${to}.`,
+          );
           // We do not throw the error here to ensure we don't crash the request
           return;
         }

@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  ConflictException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
@@ -60,7 +64,9 @@ export class AuthService {
     const companyEmail = 'company@example.com';
     const candidateEmail = 'candidate@example.com';
 
-    const adminExists = await this.prisma.user.findUnique({ where: { email: adminEmail } });
+    const adminExists = await this.prisma.user.findUnique({
+      where: { email: adminEmail },
+    });
     if (!adminExists) {
       const hashedPassword = await bcrypt.hash('admin123', 10);
       await this.prisma.user.create({
@@ -72,7 +78,9 @@ export class AuthService {
       });
     }
 
-    const companyExists = await this.prisma.user.findUnique({ where: { email: companyEmail } });
+    const companyExists = await this.prisma.user.findUnique({
+      where: { email: companyEmail },
+    });
     if (!companyExists) {
       const hashedPassword = await bcrypt.hash('company123', 10);
       await this.prisma.user.create({
@@ -84,7 +92,9 @@ export class AuthService {
       });
     }
 
-    const candidateExists = await this.prisma.user.findUnique({ where: { email: candidateEmail } });
+    const candidateExists = await this.prisma.user.findUnique({
+      where: { email: candidateEmail },
+    });
     if (!candidateExists) {
       const hashedPassword = await bcrypt.hash('candidate123', 10);
       await this.prisma.user.create({

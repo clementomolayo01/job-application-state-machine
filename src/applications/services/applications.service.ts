@@ -1,4 +1,9 @@
-import { Injectable, BadRequestException, NotFoundException, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+  Logger,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { EmailService } from '../../email/email.service';
 import { UpdateStatusDto } from '../dto/update-status.dto';
@@ -25,7 +30,9 @@ export class ApplicationsService {
     });
 
     if (existing) {
-      throw new BadRequestException(`You have already applied for the ${dto.roleApplied} role.`);
+      throw new BadRequestException(
+        `You have already applied for the ${dto.roleApplied} role.`,
+      );
     }
 
     return this.prisma.$transaction(async (tx) => {
@@ -95,9 +102,14 @@ export class ApplicationsService {
     });
 
     // Send email notifications asynchronously
-    this.emailService.sendStatusChangeNotification(application.user.email, newStatus).catch(err => {
-      this.logger.error(`Failed to send status update email for app ${id}`, err);
-    });
+    this.emailService
+      .sendStatusChangeNotification(application.user.email, newStatus)
+      .catch((err) => {
+        this.logger.error(
+          `Failed to send status update email for app ${id}`,
+          err,
+        );
+      });
 
     return updatedApplication;
   }
@@ -114,15 +126,33 @@ export class ApplicationsService {
     });
   }
 
-  validateTransition(currentStatus: ApplicationStatus, nextStatus: ApplicationStatus, dto: UpdateStatusDto) {
+  validateTransition(
+    currentStatus: ApplicationStatus,
+    nextStatus: ApplicationStatus,
+    dto: UpdateStatusDto,
+  ) {
     if (nextStatus === ApplicationStatus.CLOSED) {
-      return; 
+      return;
     }
 
-    if (currentStatus === ApplicationStatus.APPLIED && nextStatus === ApplicationStatus.INTERVIEWING) return;
-    if (currentStatus === ApplicationStatus.INTERVIEWING && nextStatus === ApplicationStatus.CONTRACTED) return;
-    if (currentStatus === ApplicationStatus.CONTRACTED && nextStatus === ApplicationStatus.COMPLETED) return;
+    if (
+      currentStatus === ApplicationStatus.APPLIED &&
+      nextStatus === ApplicationStatus.INTERVIEWING
+    )
+      return;
+    if (
+      currentStatus === ApplicationStatus.INTERVIEWING &&
+      nextStatus === ApplicationStatus.CONTRACTED
+    )
+      return;
+    if (
+      currentStatus === ApplicationStatus.CONTRACTED &&
+      nextStatus === ApplicationStatus.COMPLETED
+    )
+      return;
 
-    throw new BadRequestException(`Invalid transition from ${currentStatus} to ${nextStatus}`);
+    throw new BadRequestException(
+      `Invalid transition from ${currentStatus} to ${nextStatus}`,
+    );
   }
 }
