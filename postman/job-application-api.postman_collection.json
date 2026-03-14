@@ -90,6 +90,51 @@
       ]
     },
     {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Get My Profile",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                { "key": "token", "value": "{{jwt_token}}", "type": "string" }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/users/profile",
+              "protocol": "http",
+              "host": [ "localhost" ],
+              "port": "3000",
+              "path": [ "api", "users", "profile" ]
+            }
+          }
+        },
+        {
+          "name": "List All Users (ADMIN)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                { "key": "token", "value": "{{jwt_token}}", "type": "string" }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/users",
+              "protocol": "http",
+              "host": [ "localhost" ],
+              "port": "3000",
+              "path": [ "api", "users" ]
+            }
+          }
+        }
+      ]
+    },
+    {
       "name": "Applications",
       "item": [
         {
