@@ -44,7 +44,15 @@ export class ApplicationsService {
           coverLetter: dto.coverLetter,
           status: ApplicationStatus.APPLIED,
         },
-        include: { user: true },
+        include: {
+          user: {
+            select: {
+              id: true,
+              email: true,
+              role: true,
+            },
+          },
+        },
       });
 
       await tx.statusHistory.create({
@@ -76,7 +84,15 @@ export class ApplicationsService {
 
   async findAll() {
     return this.prisma.application.findMany({
-      include: { user: true },
+      include: {
+        user: {
+          select: {
+            id: true,
+            email: true,
+            role: true,
+          },
+        },
+      },
       orderBy: { createdAt: 'desc' },
     });
   }
@@ -86,7 +102,15 @@ export class ApplicationsService {
 
     const application = await this.prisma.application.findUnique({
       where: { id },
-      include: { user: true },
+      include: {
+        user: {
+          select: {
+            id: true,
+            email: true,
+            role: true,
+          },
+        },
+      },
     });
 
     if (!application) {
