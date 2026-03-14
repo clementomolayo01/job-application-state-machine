@@ -2,6 +2,7 @@ import {
   Injectable,
   UnauthorizedException,
   ConflictException,
+  Logger,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
@@ -13,6 +14,8 @@ import { EmailService } from '../email/email.service';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
@@ -51,7 +54,14 @@ export class AuthService {
       },
     });
 
-    this.emailService.sendWelcomeEmail(email, registerDto.name).catch(() => {});
+    this.emailService
+      .sendWelcomeEmail(email, registerDto.name)
+      .catch((err: unknown) => {
+        this.logger.error(
+          `Failed to send welcome email to ${email}`,
+          err instanceof Error ? err.stack : String(err),
+        );
+      });
 
     const payload = { userId: user.id, email: user.email, role: user.role };
     return {

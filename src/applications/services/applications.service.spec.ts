@@ -23,7 +23,11 @@ describe('ApplicationsService', () => {
         {
           provide: PrismaService,
           useValue: {
-            application: { findUnique: jest.fn(), update: jest.fn() },
+            application: {
+              findUnique: jest.fn(),
+              update: jest.fn(),
+              create: jest.fn(),
+            },
             statusHistory: { create: jest.fn(), findMany: jest.fn() },
             $transaction: jest.fn(),
           },
@@ -42,6 +46,44 @@ describe('ApplicationsService', () => {
 
   it('should be defined', () => {
     expect(service).toBeDefined();
+  });
+
+  describe('create', () => {
+    it('should create an application and send an email', async () => {
+      const mockApp = {
+        id: 'uuid',
+        userId: 'user1',
+        roleApplied: 'BACKEND_ENGINEER',
+        user: { email: 'test@test.com' },
+      };
+
+      jest.spyOn(prisma.application, 'findUnique').mockResolvedValue(null);
+      jest.spyOn(prisma.application, 'create').mockResolvedValue(mockApp as any);
+
+      const transactionMock = jest
+        .fn()
+        .mockImplementation((cb: (tx: PrismaService) => Promise<any>) => {
+          return cb(prisma);
+        });
+      jest.spyOn(prisma, '$transaction').mockImplementation(transactionMock);
+
+      const emailSpy = jest
+        .spyOn(emailService, 'sendStatusChangeNotification')
+        .mockResolvedValue(undefined);
+
+      const dto = {
+        roleApplied: 'BACKEND_ENGINEER' as any,
+        coverLetter: 'Hello',
+      };
+
+      await service.create(dto, 'user1');
+
+      expect(transactionMock).toHaveBeenCalled();
+      expect(emailSpy).toHaveBeenCalledWith(
+        'test@test.com',
+        ApplicationStatus.APPLIED,
+      );
+    });
   });
 
   describe('validateTransition', () => {
